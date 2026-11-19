@@ -33,8 +33,8 @@ export default function ChatInput({
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 pb-4 pt-1">
-      <div className="relative flex flex-col rounded-2xl bg-white border border-beige-300 shadow-lg shadow-beige-300/30 dark:bg-navy-800 dark:border-navy-700 dark:shadow-black/40 focus-within:ring-2 focus-within:ring-orange-500/40 focus-within:border-orange-500 dark:focus-within:ring-white/30 dark:focus-within:border-white transition-all">
-        {/* Input Text Area */}
+      <div className="relative flex flex-col rounded-2xl bg-white border border-[#e3d7c3] shadow-lg shadow-beige-300/30 dark:bg-[#0d1838] dark:border-[#182b62] dark:shadow-black/50 focus-within:ring-2 focus-within:ring-orange-500/40 focus-within:border-orange-500 dark:focus-within:ring-[#3257be]/50 dark:focus-within:border-[#3257be] transition-all">
+        {/* Input Text Area: Beige text in dark mode */}
         <textarea
           ref={textareaRef}
           value={input}
@@ -42,22 +42,22 @@ export default function ChatInput({
           onKeyDown={handleKeyDown}
           placeholder={`Message OSAKA (${activeTone} mode)...`}
           rows={1}
-          className="w-full pt-3.5 pb-2 px-4 bg-transparent text-stone-800 dark:text-white placeholder-stone-400 dark:placeholder-slate-400 text-sm resize-none focus:outline-none min-h-[48px] max-h-[180px]"
+          className="w-full pt-3.5 pb-2 px-4 bg-transparent text-stone-800 dark:text-[#f4eee3] placeholder-stone-400 dark:placeholder-[#cfc3b0] text-sm resize-none focus:outline-none min-h-[48px] max-h-[180px]"
         />
 
         {/* Action Toolbar */}
-        <div className="flex items-center justify-between px-3.5 pb-2.5 pt-1 border-t border-beige-200/80 dark:border-navy-750">
+        <div className="flex items-center justify-between px-3.5 pb-2.5 pt-1 border-t border-[#eee6d8] dark:border-[#12204c]">
           {/* Tone indicator */}
-          <div className="flex items-center gap-1.5 text-xs text-stone-400 dark:text-slate-400">
+          <div className="flex items-center gap-1.5 text-xs text-stone-400 dark:text-[#cfc3b0]">
             {toneConfig && (
-              <span className="flex items-center gap-1 font-semibold text-stone-700 dark:text-slate-200">
+              <span className="flex items-center gap-1 font-semibold text-stone-700 dark:text-white">
                 <span>{toneConfig.emoji}</span>
                 <span className="text-[11px]">{toneConfig.label} Mode</span>
               </span>
             )}
-            <span className="hidden sm:inline text-stone-300 dark:text-navy-600">•</span>
+            <span className="hidden sm:inline text-stone-300 dark:text-[#182b62]">•</span>
             <span className="hidden sm:inline text-[11px]">
-              Press <kbd className="px-1.5 py-0.5 rounded bg-beige-150 dark:bg-navy-900 border border-beige-300 dark:border-navy-700 font-mono text-[10px] text-stone-700 dark:text-slate-300">Enter ↵</kbd> to send
+              Press <kbd className="px-1.5 py-0.5 rounded bg-[#f4efe4] dark:bg-[#070d1e] border border-[#e3d7c3] dark:border-[#182b62] font-mono text-[10px] text-stone-700 dark:text-[#f4eee3]">Enter ↵</kbd> to send
             </span>
           </div>
 
@@ -78,10 +78,10 @@ export default function ChatInput({
                 type="button"
                 onClick={onSend}
                 disabled={!input.trim()}
-                className={`p-2 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500/40 dark:focus:ring-white/40 ${
+                className={`p-2 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500/40 dark:focus:ring-[#3257be]/40 ${
                   input.trim()
-                    ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-md shadow-orange-600/30 active:scale-95 dark:bg-white dark:hover:bg-slate-100 dark:text-navy-950 dark:shadow-white/20'
-                    : 'bg-beige-150 text-stone-400 dark:bg-navy-750 dark:text-slate-500 cursor-not-allowed'
+                    ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-md shadow-orange-600/30 active:scale-95 dark:bg-[#182b62] dark:hover:bg-[#233d87] dark:border dark:border-[#3257be] dark:text-white dark:shadow-md'
+                    : 'bg-[#f4efe4] text-stone-400 dark:bg-[#070d1e] dark:text-[#cfc3b0]/40 dark:border dark:border-[#182b62]/40 cursor-not-allowed'
                 }`}
                 title="Send message"
               >
@@ -92,8 +92,8 @@ export default function ChatInput({
         </div>
       </div>
 
-      <div className="text-center mt-2 text-[11px] text-stone-400 dark:text-slate-400">
-        OSAKA AI Assistant • Intelligent streaming with tone modifiers & persistent memory.
+      <div className="text-center mt-2 text-[11px] text-stone-400 dark:text-[#cfc3b0]">
+        OSAKA AI Assistant • Navy & Beige Dark Mode / White & Orange Light Mode
       </div>
     </div>
   );

@@ -1,5 +1,27 @@
 [
   {
+    "_id": "conv_1795065886223_q8dmu5",
+    "title": "Compare Java vs Python : Pros, cons an...",
+    "tone": "Concise",
+    "messages": [
+      {
+        "id": "msg_1795065886228_u",
+        "sender": "user",
+        "content": "Compare Java vs Python : Pros, cons and use cases",
+        "timestamp": "2026-11-19T05:24:46.228Z"
+      },
+      {
+        "id": "msg_1795065886237_a",
+        "sender": "assistant",
+        "content": "> ⚠️ **Anthropic Claude Notice:** *Your credit balance is too low to access the Anthropic API.*\n> 💳 *To stream live Claude 3.5 Sonnet directly, top up prepaid API credits at [console.anthropic.com/settings/plans](https://console.anthropic.com/settings/plans).*\n> 💡 *In the meantime, your assistant has generated the complete answer below:*\n\n---\n\n### Python Architecture & Practical Guide\n\n#### Strengths\n* High readability, expressive syntax, and extensive ecosystem (FastAPI, Django, Pandas, PyTorch).\n* Dynamically typed with modern support for static typing via `typing` module and `pydantic`.\n* Asynchronous support via `asyncio` for concurrent network I/O.",
+        "tone": "Concise",
+        "timestamp": "2026-11-19T05:24:49.732Z"
+      }
+    ],
+    "createdAt": "2026-11-19T05:24:46.223Z",
+    "updatedAt": "2026-11-19T05:24:49.733Z"
+  },
+  {
     "_id": "conv_1795065715341_h5htzj",
     "title": "hi who are you?",
     "tone": "Professional",

@@ -12,6 +12,52 @@
   }
 }
 
+/* ========================================================
+   THEME PALETTE SYSTEM:
+   - LIGHT MODE: White, Beige, Orange Accents
+   - DARK MODE:  Everything in Navy Blue; Text in White & Beige
+   ======================================================== */
+
+:root {
+  --color-bg-main: #f8f5ee;
+  --color-bg-sidebar: #fdfbf7;
+  --color-bg-header: rgba(253, 251, 247, 0.92);
+  --color-bg-card: #ffffff;
+  --color-bg-input: #ffffff;
+  --color-border: #e3d7c3;
+  --color-border-subtle: #eee6d8;
+  --color-text-title: #1c1917;
+  --color-text-body: #292524;
+  --color-text-muted: #78716c;
+  --color-accent: #ea580c;
+  --color-accent-hover: #c2410c;
+  --color-bubble-user: linear-gradient(135deg, #ea580c 0%, #d97706 100%);
+  --color-bubble-ai: #ffffff;
+}
+
+html.dark {
+  --color-bg-main: #070d1e;
+  --color-bg-sidebar: #0a132c;
+  --color-bg-header: rgba(10, 19, 44, 0.95);
+  --color-bg-card: #0d1838;
+  --color-bg-input: #0d1838;
+  --color-border: #182b62;
+  --color-border-subtle: #12204c;
+  --color-text-title: #ffffff;
+  --color-text-body: #f4eee3; /* Beige text */
+  --color-text-muted: #cfc3b0; /* Muted beige */
+  --color-accent: #3257be;
+  --color-accent-hover: #436ce0;
+  --color-bubble-user: linear-gradient(135deg, #12204c 0%, #0a132c 100%);
+  --color-bubble-ai: #0d1838;
+}
+
+/* Explicit full-page dark mode styling */
+html.dark body {
+  background-color: #070d1e !important;
+  color: #f4eee3 !important;
+}
+
 /* Custom smooth scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -22,40 +68,34 @@
   background: transparent;
 }
 
-/* Light mode: Warm beige thumb with orange hover */
+/* Light mode scrollbar */
 ::-webkit-scrollbar-thumb {
   background: rgba(207, 190, 159, 0.5);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(234, 88, 12, 0.5);
+  background: rgba(234, 88, 12, 0.6);
 }
 
-/* Dark mode: Crisp navy / slate thumb */
-.dark ::-webkit-scrollbar-thumb {
-  background: rgba(35, 61, 135, 0.5);
+/* Dark mode scrollbar: Navy & Beige */
+html.dark ::-webkit-scrollbar-thumb {
+  background: rgba(35, 61, 135, 0.6);
   border-radius: 9999px;
 }
 
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(84, 122, 228, 0.7);
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(84, 122, 228, 0.8);
 }
 
-/* Glassmorphism helpers */
+/* Glass panel */
 .glass-panel {
-  background: rgba(253, 251, 247, 0.85);
+  background: var(--color-bg-header);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
 
-.dark .glass-panel {
-  background: rgba(10, 19, 44, 0.85);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-}
-
-/* Markdown prose enhancements */
+/* Markdown prose styling */
 .prose table {
   width: 100%;
   border-collapse: collapse;
@@ -89,14 +129,35 @@
   color: #292524;
 }
 
-/* Dark mode table */
-.dark .prose th {
-  border-color: #182b62;
-  color: #ffffff;
-  background-color: #070d1e;
+/* Dark mode table: Navy & Beige */
+html.dark .prose th {
+  border-color: #182b62 !important;
+  color: #ffffff !important;
+  background-color: #0a132c !important;
 }
 
-.dark .prose td {
-  border-color: #0f1d46;
-  color: #f1f5f9;
+html.dark .prose td {
+  border-color: #12204c !important;
+  color: #f4eee3 !important;
+}
+
+/* Markdown dark mode overrides for complete readability */
+html.dark .prose p,
+html.dark .prose li,
+html.dark .prose span {
+  color: #f4eee3 !important;
+}
+
+html.dark .prose strong,
+html.dark .prose h1,
+html.dark .prose h2,
+html.dark .prose h3,
+html.dark .prose h4 {
+  color: #ffffff !important;
+}
+
+html.dark .prose blockquote {
+  border-left-color: #e3d7c3 !important;
+  background-color: #0a132c !important;
+  color: #f4eee3 !important;
 }
