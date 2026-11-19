@@ -1,0 +1,23 @@
+{
+  "name": "ai-chat-assistant",
+  "version": "1.0.0",
+  "description": "Full-stack AI Chat Assistant with Claude API, MongoDB, Tone Modifier, Light/Dark theme, and Typewriter real-time streaming",
+  "type": "module",
+  "scripts": {
+    "start": "cd backend && npm start",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev": "node -e \"import('child_process').then(({ spawn }) => { const b = spawn('npm', ['run', 'dev'], { cwd: './backend', stdio: 'inherit', shell: true }); const f = spawn('npm', ['run', 'dev'], { cwd: './frontend', stdio: 'inherit', shell: true }); process.on('SIGINT', () => { b.kill(); f.kill(); process.exit(); }); });\"",
+    "build": "cd frontend && npm run build"
+  },
+  "keywords": [
+    "ai",
+    "chat",
+    "claude",
+    "mongodb",
+    "react",
+    "tailwindcss"
+  ],
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,24 @@
+[
+  {
+    "_id": "conv_1795064114576_esr32f",
+    "title": "Explain what makes streaming fast in 2...",
+    "tone": "Professional",
+    "messages": [
+      {
+        "id": "msg_1795064114584_u",
+        "sender": "user",
+        "content": "Explain what makes streaming fast in 2 bullets.",
+        "timestamp": "2026-11-19T04:55:14.584Z"
+      },
+      {
+        "id": "msg_1795064114585_a",
+        "sender": "assistant",
+        "content": "**Query:** Explain what makes streaming fast in 2 bullets.\n\n- **Status:** Resolved\n- **Key Point 1:** Primary objective identified and verified.\n- **Key Point 2:** Direct solution executed with minimal overhead.\n- **Summary:** Action complete. Ready for next command.\n\n> 💡 *Live Claude API Note: To stream live Claude 3.5 Sonnet responses directly from Anthropic, enter your `ANTHROPIC_API_KEY` in `backend/.env`.*",
+        "tone": "Concise",
+        "timestamp": "2026-11-19T04:55:17.238Z"
+      }
+    ],
+    "createdAt": "2026-11-19T04:55:14.576Z",
+    "updatedAt": "2026-11-19T04:55:17.258Z"
+  }
+]
