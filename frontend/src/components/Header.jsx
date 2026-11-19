@@ -12,14 +12,14 @@ export default function Header({
   isGenerating,
 }) {
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between px-3 sm:px-6 py-2.5 glass-panel border-b border-slate-200/80 dark:border-slate-800 transition-colors">
+    <header className="sticky top-0 z-20 flex items-center justify-between px-3 sm:px-6 py-2.5 glass-panel border-b border-beige-300/80 dark:border-navy-750 transition-colors">
       {/* Left: Sidebar toggle & Title */}
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           type="button"
           title={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
-          className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-700/60"
+          className="p-2 rounded-xl text-stone-600 hover:text-stone-900 dark:text-slate-300 dark:hover:text-white hover:bg-beige-200/80 dark:hover:bg-navy-800 transition-all border border-transparent hover:border-beige-300 dark:hover:border-navy-700"
         >
           {isSidebarOpen ? (
             <PanelLeftClose className="w-5 h-5 hidden md:block" />
@@ -30,8 +30,8 @@ export default function Header({
         </button>
 
         <div className="flex items-center gap-2 min-w-0">
-          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" />
-          <h1 className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate max-w-[140px] sm:max-w-[220px] md:max-w-xs">
+          <div className="w-2 h-2 rounded-full bg-orange-500 dark:bg-sky-400 animate-pulse flex-shrink-0" />
+          <h1 className="text-sm font-semibold text-stone-800 dark:text-white truncate max-w-[140px] sm:max-w-[220px] md:max-w-xs">
             {currentTitle || 'New Conversation'}
           </h1>
         </div>
@@ -39,14 +39,11 @@ export default function Header({
 
       {/* Right: Tone Selector & Theme Toggle */}
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* Tone Selector Component */}
         <ToneSelector
           activeTone={activeTone}
           onToneChange={onToneChange}
           disabled={isGenerating}
         />
-
-        {/* Light / Dark Mode Toggle */}
         <ThemeToggle />
       </div>
     </header>

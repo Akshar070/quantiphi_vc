@@ -11,8 +11,19 @@ export function generateIntelligentResponse(prompt, tone = 'Professional', apiNo
   const pLower = prompt.toLowerCase();
   let content = '';
 
+  // 0. Greetings & Introductions
+  const isGreeting =
+    /^(hi|hello|hey|howdy|greetings|good\s+(morning|afternoon|evening))/i.test(pLower.trim()) ||
+    pLower.includes('how are you') ||
+    pLower.includes('who are you') ||
+    pLower.includes('your name') ||
+    pLower.includes('what is osaka');
+
+  if (isGreeting) {
+    content = getGreetingResponse(tone);
+  }
   // 1. Docker and/or Kubernetes
-  if (
+  else if (
     (pLower.includes('docker') && pLower.includes('kubernetes')) ||
     pLower.includes('k8s') ||
     (pLower.includes('container') && (pLower.includes('docker') || pLower.includes('kubernetes')))
@@ -54,6 +65,45 @@ export function generateIntelligentResponse(prompt, tone = 'Professional', apiNo
   }
 
   return content;
+}
+
+/**
+ * Greeting & Assistant Introduction Response
+ */
+function getGreetingResponse(tone) {
+  if (tone === 'Casual') {
+    return `### Hey there! I'm OSAKA 😊
+
+I'm doing great, thank you for asking! I'm your AI assistant, ready to dive into whatever you're working on today.
+
+Whether you want to:
+* 🛠️ **Build or debug code** (Docker, Kubernetes, React, Node.js, Python, etc.)
+* 💡 **Brainstorm system designs or architectures**
+* ⚡ **Solve a tricky technical challenge**
+* ☕ **Or just have a friendly conversation**
+
+What are you building or exploring today? Let's get into it! 🚀`;
+  }
+
+  if (tone === 'Concise') {
+    return `### OSAKA AI Assistant
+* **Identity:** OSAKA
+* **Status:** Operational & ready.
+* **Capabilities:** Full-stack development, cloud infrastructure, container orchestration, databases, and system analysis.
+* **Instruction:** Awaiting your command.`;
+  }
+
+  // Professional
+  return `### Greetings! I am OSAKA, your AI Assistant.
+
+I am operating at full capacity and ready to assist you. 
+
+I specialize in:
+* **Cloud & DevOps Engineering:** Containerization (Docker), orchestration (Kubernetes), microservices, and CI/CD automation.
+* **Full-Stack Development:** Modern frontend architectures (React, Tailwind), backend APIs (Node.js, Express, Python), and database optimization (MongoDB, SQL, Redis).
+* **System Design & Strategy:** Enterprise software architecture, security, scalability, and code review.
+
+Please let me know your current objective or technical query to get started.`;
 }
 
 /**

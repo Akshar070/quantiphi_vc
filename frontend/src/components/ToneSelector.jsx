@@ -7,31 +7,31 @@ const TONES = [
     label: 'Professional',
     icon: Briefcase,
     emoji: '👔',
-    badgeClass: 'text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 border-blue-200 dark:border-blue-800',
-    description: 'Polished, authoritative, and structured responses suitable for business & academic work.',
+    badgeClass: 'text-stone-800 dark:text-white bg-white/90 dark:bg-navy-800 border-beige-300 dark:border-navy-600 shadow-xs',
+    description: 'Polished, authoritative, and structured responses suitable for executive & technical work.',
   },
   {
     id: 'Casual',
     label: 'Casual',
     icon: Coffee,
     emoji: '☕',
-    badgeClass: 'text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800',
-    description: 'Friendly, warm, conversational style with everyday phrasing & natural humor.',
+    badgeClass: 'text-orange-900 dark:text-amber-200 bg-orange-50 dark:bg-navy-800 border-orange-200 dark:border-navy-600 shadow-xs',
+    description: 'Friendly, warm, conversational style with relatable analogies & engaging cadence.',
   },
   {
     id: 'Concise',
     label: 'Concise',
     icon: Zap,
     emoji: '⚡',
-    badgeClass: 'text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800',
+    badgeClass: 'text-stone-900 dark:text-sky-200 bg-beige-150 dark:bg-navy-800 border-beige-300 dark:border-navy-600 shadow-xs',
     description: 'Direct, razor-sharp answers with zero fluff or filler in minimal words.',
   },
 ];
 
 export default function ToneSelector({ activeTone, onToneChange, disabled = false }) {
   return (
-    <div className="flex items-center gap-1.5 p-1 bg-slate-100/90 dark:bg-slate-800/80 rounded-xl border border-slate-200/80 dark:border-slate-700/60 shadow-inner">
-      <span className="text-xs font-semibold px-2 py-1 text-slate-500 dark:text-slate-400 hidden sm:inline select-none">
+    <div className="flex items-center gap-1.5 p-1 bg-beige-200/70 dark:bg-navy-850/90 rounded-xl border border-beige-300/80 dark:border-navy-700/80 shadow-xs">
+      <span className="text-xs font-semibold px-2 py-1 text-stone-500 dark:text-slate-400 hidden sm:inline select-none">
         Tone:
       </span>
       {TONES.map((t) => {
@@ -45,10 +45,10 @@ export default function ToneSelector({ activeTone, onToneChange, disabled = fals
             disabled={disabled}
             onClick={() => onToneChange(t.id)}
             title={`${t.label}: ${t.description}`}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-500/40 ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500/30 dark:focus:ring-white/30 ${
               isSelected
-                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm font-semibold scale-[1.02]'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-white/60 dark:hover:bg-slate-700/50'
+                ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/20 font-semibold scale-[1.02] dark:bg-white dark:text-navy-950 dark:shadow-white/10'
+                : 'text-stone-700 dark:text-slate-300 hover:text-stone-900 dark:hover:text-white hover:bg-white/70 dark:hover:bg-navy-750'
             } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
           >
             <span>{t.emoji}</span>

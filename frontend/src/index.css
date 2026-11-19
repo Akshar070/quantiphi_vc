@@ -22,32 +22,81 @@
   background: transparent;
 }
 
+/* Light mode: Warm beige thumb with orange hover */
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.3);
+  background: rgba(207, 190, 159, 0.5);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.5);
+  background: rgba(234, 88, 12, 0.5);
 }
 
+/* Dark mode: Crisp navy / slate thumb */
 .dark ::-webkit-scrollbar-thumb {
-  background: rgba(71, 85, 105, 0.4);
+  background: rgba(35, 61, 135, 0.5);
+  border-radius: 9999px;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(71, 85, 105, 0.7);
+  background: rgba(84, 122, 228, 0.7);
 }
 
 /* Glassmorphism helpers */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(253, 251, 247, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .dark .glass-panel {
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(10, 19, 44, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* Markdown prose enhancements */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.875rem;
+}
+
+.prose th, .prose td {
+  padding: 0.6rem 0.85rem;
+  text-align: left;
+}
+
+.prose th {
+  font-weight: 600;
+  border-bottom: 2px solid;
+}
+
+.prose td {
+  border-bottom: 1px solid;
+}
+
+/* Light mode table */
+.prose th {
+  border-color: #e3d7c3;
+  color: #1c1917;
+  background-color: #f4efe4;
+}
+
+.prose td {
+  border-color: #eee6d8;
+  color: #292524;
+}
+
+/* Dark mode table */
+.dark .prose th {
+  border-color: #182b62;
+  color: #ffffff;
+  background-color: #070d1e;
+}
+
+.dark .prose td {
+  border-color: #0f1d46;
+  color: #f1f5f9;
 }

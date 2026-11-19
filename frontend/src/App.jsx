@@ -287,7 +287,7 @@ export default function App() {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans">
+    <div className="flex h-screen w-screen overflow-hidden bg-beige-100 dark:bg-navy-900 text-stone-900 dark:text-white font-sans">
       {/* Sidebar for Conversation History */}
       <Sidebar
         conversations={conversations}
@@ -352,7 +352,7 @@ export default function App() {
             <button
               onClick={() => scrollToBottom('smooth')}
               type="button"
-              className="fixed bottom-24 right-8 p-2 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all z-20 hover:scale-105 active:scale-95"
+              className="fixed bottom-24 right-8 p-2 rounded-full bg-white dark:bg-navy-800 text-stone-700 dark:text-white border border-beige-300 dark:border-navy-750 shadow-lg hover:shadow-xl transition-all z-20 hover:scale-105 active:scale-95 hover:border-orange-500 dark:hover:border-white/50"
               title="Scroll to bottom"
             >
               <ArrowDown className="w-4 h-4" />

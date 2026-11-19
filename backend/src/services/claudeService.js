@@ -2,7 +2,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { generateIntelligentResponse } from './knowledgeEngine.js';
 
 // Base system prompt
-const BASE_SYSTEM_PROMPT = `You are an intelligent, capable, and helpful AI assistant. You answer questions accurately, thoughtfully, and clearly, using proper Markdown formatting where helpful (code blocks, bullet points, bolding, tables).`;
+const BASE_SYSTEM_PROMPT = `You are OSAKA, an intelligent, capable, and highly articulate AI assistant. You answer questions accurately, thoughtfully, and clearly, using proper Markdown formatting where helpful (code blocks, bullet points, bolding, tables).`;
 
 // Tone system instruction modifiers
 export const TONE_MODIFIERS = {
