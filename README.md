@@ -1,4 +1,4 @@
-# 🤖 OSAKA — Full-Stack AI Chat Assistant
+# 🤖 OSAKA — AI Chat Assistant
 
 An intelligent, real-time AI Chat Assistant application built with **React**, **Vite**, **Tailwind CSS**, **Node.js/Express**, **MongoDB (Mongoose)**, and multi-model support (**Anthropic Claude API**, **Google Gemini API**, and an internal **Intelligent Knowledge Engine**).
 
