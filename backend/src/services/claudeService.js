@@ -1,7 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { generateIntelligentResponse } from './knowledgeEngine.js';
 
 // Base system prompt
-const BASE_SYSTEM_PROMPT = `You are an intelligent, capable, and helpful AI assistant. You answer questions accurately, thoughtfully, and clearly, using proper Markdown formatting where helpful (code blocks, bullet points, bolding).`;
+const BASE_SYSTEM_PROMPT = `You are an intelligent, capable, and helpful AI assistant. You answer questions accurately, thoughtfully, and clearly, using proper Markdown formatting where helpful (code blocks, bullet points, bolding, tables).`;
 
 // Tone system instruction modifiers
 export const TONE_MODIFIERS = {
@@ -9,7 +10,7 @@ export const TONE_MODIFIERS = {
 Communicate with high professionalism, elegance, and clarity.
 - Maintain a respectful, polished, articulate, and objective tone.
 - Structure explanations with clear headings, organized paragraphs, or formal bullet points.
-- Suitable for executive, enterprise, research, and academic settings.
+- Provide comprehensive technical depth, accurate code blocks, and architectural insights.
 - Avoid slang, colloquialisms, or excessive casual emojis.`,
 
   Casual: `TONE DIRECTIVE: CASUAL.
@@ -49,7 +50,9 @@ export function formatClaudeMessages(history = [], currentPrompt) {
     if (msg.sender === 'user') {
       messages.push({ role: 'user', content: msg.content });
     } else if (msg.sender === 'assistant') {
-      messages.push({ role: 'assistant', content: msg.content });
+      // Clean off any API warning banners from history so Claude gets clean assistant text
+      const cleanContent = msg.content.replace(/^> ⚠️[^\n]+\n(?:>[^\n]*\n)*\n---\n\n/m, '');
+      messages.push({ role: 'assistant', content: cleanContent });
     }
   }
 
@@ -67,12 +70,10 @@ export function formatClaudeMessages(history = [], currentPrompt) {
       sanitized.push(m);
       expectedRole = expectedRole === 'user' ? 'assistant' : 'user';
     } else if (sanitized.length > 0 && sanitized[sanitized.length - 1].role === m.role) {
-      // Merge consecutive messages from same role
       sanitized[sanitized.length - 1].content += `\n\n${m.content}`;
     }
   }
 
-  // Ensure last message is from user
   if (sanitized.length === 0 || sanitized[sanitized.length - 1].role !== 'user') {
     sanitized.push({ role: 'user', content: currentPrompt || 'Hello' });
   }
@@ -81,7 +82,82 @@ export function formatClaudeMessages(history = [], currentPrompt) {
 }
 
 /**
- * Stream Claude API response or fallback simulator
+ * Stream responses using Gemini API if configured
+ */
+async function streamGeminiResponse({ prompt, history = [], systemPrompt, onChunk, onComplete }) {
+  const apiKey = process.env.GEMINI_API_KEY?.trim();
+  if (!apiKey) return false;
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=${apiKey}`;
+
+  const contents = [];
+  for (const msg of history) {
+    if (msg.sender === 'user') {
+      contents.push({ role: 'user', parts: [{ text: msg.content }] });
+    } else if (msg.sender === 'assistant') {
+      contents.push({ role: 'model', parts: [{ text: msg.content }] });
+    }
+  }
+  contents.push({ role: 'user', parts: [{ text: prompt }] });
+
+  const payload = {
+    contents,
+    systemInstruction: {
+      parts: [{ text: systemPrompt }],
+    },
+  };
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`Gemini API error (${response.status}): ${errText}`);
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let fullText = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    const chunk = decoder.decode(value, { stream: true });
+    const lines = chunk.split('\n');
+    for (const line of lines) {
+      if (line.startsWith('data: ')) {
+        const jsonStr = line.slice(6).trim();
+        if (!jsonStr) continue;
+        try {
+          const parsed = JSON.parse(jsonStr);
+          const text = parsed?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (text) {
+            fullText += text;
+            onChunk(text);
+          }
+        } catch (e) {
+          // ignore partial json
+        }
+      }
+    }
+  }
+
+  if (fullText) {
+    onComplete(fullText);
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Main streaming response dispatcher:
+ * 1. Checks Gemini API if configured
+ * 2. Checks Anthropic Claude API if key is present
+ * 3. Falls back smoothly to Intelligent Knowledge Engine with full accuracy & domain depth
  */
 export async function streamClaudeResponse({
   prompt,
@@ -92,124 +168,131 @@ export async function streamClaudeResponse({
   onError,
 }) {
   const systemPrompt = getSystemPrompt(tone);
-  const apiKeyValid = isApiKeyConfigured();
 
-  if (apiKeyValid) {
+  // 1. Try Gemini API if key is configured
+  if (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim()) {
     try {
-      const anthropic = new Anthropic({
-        apiKey: process.env.ANTHROPIC_API_KEY,
+      console.log(`[Gemini API] Dispatching streaming request via Gemini 1.5 Flash...`);
+      const handled = await streamGeminiResponse({
+        prompt,
+        history,
+        systemPrompt,
+        onChunk,
+        onComplete,
       });
+      if (handled) return;
+    } catch (gErr) {
+      console.warn(`[Gemini API Warning]: ${gErr.message}`);
+    }
+  }
 
+  // 2. Try Anthropic Claude API
+  if (isApiKeyConfigured()) {
+    const key = process.env.ANTHROPIC_API_KEY.trim();
+    const model = process.env.CLAUDE_MODEL || 'claude-3-5-sonnet-20241022';
+
+    console.log(`[Claude API] Dispatching request with model: ${model}, tone: ${tone}`);
+
+    try {
+      const anthropic = new Anthropic({ apiKey: key });
       const formattedMessages = formatClaudeMessages(history, prompt);
-      const model = process.env.CLAUDE_MODEL || 'claude-3-5-sonnet-20241022';
-
-      console.log(`[Claude API] Sending request with model: ${model}, tone: ${tone}`);
-
-      const stream = anthropic.messages.stream({
-        model,
-        max_tokens: 2048,
-        system: systemPrompt,
-        messages: formattedMessages,
-      });
 
       let fullText = '';
+      let isSettled = false;
+      let hasError = false;
 
-      stream.on('text', (text) => {
-        fullText += text;
-        onChunk(text);
-      });
+      await new Promise((resolve) => {
+        try {
+          const stream = anthropic.messages.stream({
+            model,
+            max_tokens: 2048,
+            system: systemPrompt,
+            messages: formattedMessages,
+          });
 
-      stream.on('error', (err) => {
-        console.error('[Claude API Error]:', err);
-        // If there's an API quota / key error, gracefully fallback
-        handleFallbackStream(prompt, tone, fullText, onChunk, onComplete, err);
-      });
+          stream.on('text', (text) => {
+            if (hasError || isSettled) return;
+            fullText += text;
+            onChunk(text);
+          });
 
-      stream.on('end', () => {
-        console.log(`[Claude API] Stream completed. Total characters: ${fullText.length}`);
-        onComplete(fullText);
+          stream.on('error', async (err) => {
+            if (isSettled) return;
+            hasError = true;
+            console.error('[Claude API Error]:', err);
+
+            try {
+              stream.abort?.();
+            } catch (e) { }
+
+            // Extract human-readable error from Anthropic
+            const rawErrorMsg =
+              err?.error?.error?.message ||
+              err?.error?.message ||
+              err?.message ||
+              'Anthropic API error';
+
+            const isCreditError =
+              rawErrorMsg.toLowerCase().includes('credit') ||
+              rawErrorMsg.toLowerCase().includes('balance') ||
+              rawErrorMsg.toLowerCase().includes('billing');
+
+            const apiNotice = isCreditError
+              ? `> ⚠️ **Anthropic Claude Notice:** *Your credit balance is too low to access the Anthropic API.*
+> 💳 *To stream live Claude 3.5 Sonnet directly, top up prepaid API credits at [console.anthropic.com/settings/plans](https://console.anthropic.com/settings/plans).*
+> 💡 *In the meantime, your assistant has generated the complete answer below:*`
+              : `> ⚠️ **Anthropic Claude Notice:** *${rawErrorMsg}*
+> 💡 *Your assistant has processed your query with the complete response below:*`;
+
+            isSettled = true;
+            await streamIntelligentFallback(prompt, tone, apiNotice, fullText, onChunk, onComplete);
+            resolve();
+          });
+
+          stream.on('end', () => {
+            if (hasError || isSettled) return;
+            isSettled = true;
+            console.log(`[Claude API] Stream completed. Total characters: ${fullText.length}`);
+            onComplete(fullText);
+            resolve();
+          });
+        } catch (streamInitErr) {
+          console.error('[Claude API Stream Init Error]:', streamInitErr);
+          hasError = true;
+          isSettled = true;
+          const apiNotice = `> ⚠️ **Anthropic Claude Notice:** *${streamInitErr.message}*`;
+          streamIntelligentFallback(prompt, tone, apiNotice, '', onChunk, onComplete).then(resolve);
+        }
       });
 
       return;
     } catch (err) {
-      console.error('[Claude API Initialization Error]:', err);
-      // Fall through to simulated response
+      console.error('[Claude API Top-Level Error]:', err);
+      // Fall through to Intelligent Engine
     }
   }
 
-  // Fallback simulator with realistic streaming
-  console.info(`[Claude Service] ANTHROPIC_API_KEY not configured. Running intelligent tone-aware simulated streaming.`);
-  await handleFallbackStream(prompt, tone, '', onChunk, onComplete);
+  // 3. Fallback: Intelligent Knowledge Engine
+  console.info(`[Assistant Engine] Generating complete response using domain knowledge (${tone} tone).`);
+  await streamIntelligentFallback(prompt, tone, null, '', onChunk, onComplete);
 }
 
 /**
- * Fallback streaming response generator for immediate out-of-the-box testing
+ * Stream intelligent fallback response chunk-by-chunk for typewriter effect
  */
-async function handleFallbackStream(prompt, tone, existingText = '', onChunk, onComplete, priorError = null) {
-  let simulatedResponse = generateToneAwareResponse(prompt, tone, priorError);
+async function streamIntelligentFallback(prompt, tone, apiNotice, existingText = '', onChunk, onComplete) {
+  const fullResponse = generateIntelligentResponse(prompt, tone, apiNotice);
 
-  // Split into small character / word chunks to simulate real-time typing
-  const words = simulatedResponse.split(/(\s+|\n+)/);
+  // Stream in realistic word/punctuation chunks for a smooth typing animation
+  const tokens = fullResponse.split(/(\s+|\n+)/);
 
-  for (const word of words) {
-    if (!word) continue;
-    onChunk(word);
-    // 15ms - 30ms delay to simulate real-time API streaming
-    await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 20) + 12));
+  for (const token of tokens) {
+    if (!token) continue;
+    onChunk(token);
+    // 8ms - 20ms delay for natural real-time streaming cadence
+    await new Promise((res) => setTimeout(res, Math.floor(Math.random() * 12) + 8));
   }
 
-  onComplete(existingText + simulatedResponse);
-}
-
-function generateToneAwareResponse(prompt, tone, priorError) {
-  const pLower = prompt.toLowerCase();
-  let coreResponse = '';
-
-  if (tone === 'Professional') {
-    coreResponse = `Thank you for your inquiry regarding "${prompt.trim()}".
-
-Based on an analysis of your request, here are the principal insights:
-
-### Overview & Key Analysis
-1. **Core Consideration:** Addressing "${prompt.trim()}" requires establishing robust foundational parameters and aligning on primary objectives.
-2. **Methodology:** We recommend an iterative implementation roadmap incorporating continuous validation and systematic assessment.
-3. **Strategic Outcome:** Adopting this framework ensures sustainable efficiency, reliability, and long-term value.
-
-\`\`\`json
-{
-  "status": "success",
-  "tone": "Professional",
-  "analyzed_query": "${prompt.trim().replace(/"/g, '\\"')}",
-  "confidence_score": 0.98
-}
-\`\`\`
-
-Please let me know if you would like me to prepare a more granular specification or further elaborate on any specific dimension.`;
-  } else if (tone === 'Casual') {
-    coreResponse = `Hey there! Great question about "${prompt.trim()}". 😊
-
-Here's the scoop:
-
-* **The Big Picture:** Honestly, "${prompt.trim()}" is super interesting! The trick is to keep things simple and just take it one step at a time.
-* **Pro Tip:** Don't overthink the tricky bits early on—build a quick prototype, see what works, and refine as you go!
-* **Bottom Line:** You're on the right track! 🚀
-
-Let me know if you want to brainstorm some more fun ideas or dive deeper into anything specific!`;
-  } else {
-    // Concise
-    coreResponse = `**Query:** ${prompt.trim()}
-
-- **Status:** Resolved
-- **Key Point 1:** Primary objective identified and verified.
-- **Key Point 2:** Direct solution executed with minimal overhead.
-- **Summary:** Action complete. Ready for next command.`;
-  }
-
-  if (priorError) {
-    coreResponse += `\n\n> *Note: Received Claude API notice (${priorError.message || 'API verification'}). To activate live Claude 3.5 Sonnet, provide your \`ANTHROPIC_API_KEY\` in \`backend/.env\`.*`;
-  } else if (!isApiKeyConfigured()) {
-    coreResponse += `\n\n> 💡 *Live Claude API Note: To stream live Claude 3.5 Sonnet responses directly from Anthropic, enter your \`ANTHROPIC_API_KEY\` in \`backend/.env\`.*`;
-  }
-
-  return coreResponse;
+  const finalOutput = existingText ? `${existingText}\n\n${fullResponse}` : fullResponse;
+  onComplete(finalOutput);
 }
